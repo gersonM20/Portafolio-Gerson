@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <!--
+      ==========================================================
+      PROYECTO: Clínica Dental Sonrisa+ - Sitio Único (One-Page)
+      RUBRO: Salud (Odontología)
+      AUTOR: Gerson Montenegro
+      DESCRIPCIÓN:
+        - Este archivo HTML contiene TODO el sitio en una sola página.
+        - Incluye estilos (CSS) y scripts (JavaScript) incrustados.
+        - Está diseñado para funcionar en un hosting estático (ej. GitHub Pages, Netlify).
+      OBJETIVOS CLAVE:
+        - Mantener una estética limpia y profesional para el rubro salud.
+        - Añadir animaciones suaves, scroll, contadores y formulario validado.
+        - Dejar un GANCHO listo para conectar con un backend (endpoint POST).
+      CÓMO LEER ESTE ARCHIVO:
+        - Secciones: NAV, HERO, NOSOTROS, STATS, SERVICIOS, ESPECIALIDADES, CONTACTO, FOOTER, y JS al final.
+        - Cada bloque de código incluye comentarios explicativos (mismo estilo que el index de referencia).
+      ==========================================================
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clínica Dental Sonrisa+ - Escuintla</title>
+
+    <!--
+      Bootstrap 5 (CSS) y Bootstrap Icons (CDN)
+      - Proveen estilos base, sistema de grillas y componentes responsive.
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+    <!--
+      =============================
+      ESTILOS PERSONALIZADOS (CSS)
+      =============================
+      - Variables para identidad visual del rubro salud (teal/verde azulado).
+      - Si prefieres CSS externo, copia este bloque a /assets/css/custom.css
+        y enlázalo con: <link rel="stylesheet" href="assets/css/custom.css">
+    -->
+    <style>
+      /* ---------- Variables de color globales ---------- */
+      :root {
+        --color-primario: #0aa3a3;    /* Navbar, énfasis */
+        --color-oscuro:   #0b6262;    /* Stats, footer */
+        --color-acento:   #00d3b7;    /* Chips / detalles */
+        --color-texto:    #263238;    /* Texto base */
+        --color-gris:     #f7fbfb;    /* Fondo suave */
+      }
+
+      /* ---------- Tipografía y cuerpo ---------- */
+      body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; color: var(--color-texto); }
+
+      /* ---------- Barra de navegación (fija) ---------- */
+      .navbar-custom { background: var(--color-primario) !important; box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+      .logo { height: 30px; width: auto; object-fit: contain; }
+
+      /* ---------- Sección hero (portada) ----------
+         - Fondo: gradiente + SVG local (assets/img/hero.svg)
+      */
+      .hero-section {
+        background: linear-gradient(rgba(10,163,163,.85), rgba(10,163,163,.85)), url("./assets/img/hero.svg") center/cover;
+        color: #fff; padding: 120px 0; text-align: center;
+      }
+      .chip { display:inline-block; padding:.35rem .6rem; border-radius:999px; background:#e6fffb; color:#075e5e; font-weight:600; font-size:.85rem }
+
+      /* ---------- Tarjetas de servicios ---------- */
+      .service-card { border: none; box-shadow: 0 4px 10px rgba(0,0,0,.08); transition: transform .25s ease, box-shadow .25s ease; }
+      .service-card:hover { transform: translateY(-6px); box-shadow:0 10px 24px rgba(0,0,0,.12); }
+
+      /* ---------- Sección de estadísticas ---------- */
+      .stats-section { background: var(--color-oscuro); color: #fff; }
+
+      /* ---------- Footer ---------- */
+      .footer-custom { background:#0b4d4d; color:#e0f2f1; }
+
+      /* ---------- Botón scroll-top ---------- */
+      .scroll-top { position:fixed; right:20px; bottom:20px; width:50px; height:50px; border:none; border-radius:50%; background:var(--color-primario); color:#fff; display:none; z-index:999; }
+      .scroll-top:hover { background:#074d4d; }
+
+      /* ---------- Animaciones “fade-in” ---------- */
+      .fade-in { opacity:0; transform: translateY(30px); transition: all .6s ease; }
+      .fade-in.visible { opacity:1; transform: none; }
+
+      .section-divider{height:1px; background:rgba(0,0,0,.06)}
+      .ratio > img.object-cover { object-fit:cover; }
+    </style>
+  </head>
+
+  <body>
+    <!-- =====================
+         NAVBAR FIJA (HEADER)
+         - En móviles se colapsa.
+         - Enlaces internos a secciones (#).
+         ===================== -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+      <div class="container">
+        <!-- Branding textual + ícono dental -->
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2 py-0" href="#inicio">
+          <i class="bi bi-emoji-smile"></i>
+          <span>Clínica Dental Sonrisa+</span>
+        </a>
+
+        <!-- Hamburguesa (colapso) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menú -->
+        <div class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+            <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+            <li class="nav-item"><a class="nav-link" href="#especialidades">Especialidades</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============
+         HERO (INICIO)
+         - Presentación principal con CTAs
+         ============ -->
+    <section id="inicio" class="hero-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-9 fade-in">
+            <!-- Chip/etiqueta -->
+            <span class="chip mb-3">¡Agenda tu evaluación gratuita!</span>
+            <!-- Título + subtítulo -->
+            <h1 class="display-4 fw-bold mb-3">Odontología integral en Escuintla</h1>
+            <p class="lead mb-4">Cuidamos tu salud bucal con tecnología moderna y trato humano.</p>
+            <!-- Botones -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a href="#servicios" class="btn btn-light btn-lg px-4"><i class="bi bi-calendar2-check me-2"></i> Ver servicios</a>
+              <a href="#contacto" class="btn btn-outline-light btn-lg px-4"><i class="bi bi-telephone me-2"></i> Reservar cita</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================
+         SECCIÓN: NOSOTROS
+         - Texto + imagen 16:9
+         =================== -->
+    <section id="nosotros" class="py-5">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <!-- Texto -->
+          <div class="col-lg-6 order-2 order-lg-1 fade-in">
+            <h2 class="display-6 fw-bold mb-3">Sobre nosotros</h2>
+            <p class="lead">Somos un equipo de odontólogos con más de 15 años de experiencia en prevención, diagnóstico y tratamiento dental.</p>
+            <ul class="list-unstyled">
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Radiografía digital y esterilización bajo norma.</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Atención para toda la familia.</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Precios transparentes y planes de pago.</li>
+            </ul>
+          </div>
+          <!-- Imagen -->
+          <div class="col-lg-6 order-1 order-lg-2 fade-in">
+            <div class="ratio ratio-16x9 rounded shadow overflow-hidden bg-light">
+              <img src="./assets/img/historia.svg" alt="Clínica Dental Sonrisa+" class="w-100 h-100 object-cover" loading="lazy"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================
+         SECCIÓN: ESTADÍSTICAS
+         - 4 KPIs (con contador animado)
+         =================== -->
+    <section class="stats-section py-5">
+      <div class="container">
+        <div class="row text-center">
+          <div class="col-md-3 mb-4 fade-in"><i class="bi bi-people-fill display-5 mb-2"></i><h3 class="counter" data-target="3000">0</h3><p>Pacientes</p></div>
+          <div class="col-md-3 mb-4 fade-in"><i class="bi bi-award-fill display-5 mb-2"></i><h3 class="counter" data-target="15">0</h3><p>Años</p></div>
+          <div class="col-md-3 mb-4 fade-in"><i class="bi bi-emoji-smile-fill display-5 mb-2"></i><h3 class="counter" data-target="1200">0</h3><p>Blanqueamientos</p></div>
+          <div class="col-md-3 mb-4 fade-in"><i class="bi bi-shield-check display-5 mb-2"></i><h3 class="counter" data-target="100">0</h3><p>% Satisfacción</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================
+         SECCIÓN: SERVICIOS
+         - Tarjetas + bloque de chips de convenios/pagos
+         ================== -->
+    <section id="servicios" class="py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5 fade-in">
+          <h2 class="display-6 fw-bold">Servicios</h2>
+          <p class="lead">Prevención, estética y restauración</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Servicio 1 -->
+          <div class="col-lg-4 fade-in">
+            <div class="card service-card h-100">
+              <div class="card-body p-4 text-center">
+                <i class="bi bi-brightness-high display-4 text-warning mb-3"></i>
+                <h4>Profilaxis y limpieza</h4>
+                <p>Eliminación de placa y sarro, pulido y recomendaciones personalizadas.</p>
+                <div class="mt-3"><strong>Lun–Vie</strong><br/><span class="text-muted">8:00 - 17:00</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Servicio 2 -->
+          <div class="col-lg-4 fade-in">
+            <div class="card service-card h-100">
+              <div class="card-body p-4 text-center">
+                <i class="bi bi-brush-fill display-4 text-primary mb-3"></i>
+                <h4>Estética dental</h4>
+                <p>Resinas, carillas y blanqueamiento con lámpara fría.</p>
+                <div class="mt-3"><strong>Sábados</strong><br/><span class="text-muted">8:00 - 12:00</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Servicio 3 -->
+          <div class="col-lg-4 fade-in">
+            <div class="card service-card h-100">
+              <div class="card-body p-4 text-center">
+                <i class="bi bi-heart-pulse-fill display-4 text-danger mb-3"></i>
+                <h4>Urgencias</h4>
+                <p>Atención de dolor agudo, fracturas y sangrados.</p>
+                <div class="mt-3"><strong>24/7</strong><br/><span class="text-muted">*Sujeto a disponibilidad</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider + convenios/pagos como chips -->
+        <hr class="my-5 section-divider"/>
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7 fade-in">
+            <h3 class="fw-bold mb-2">Convenios y pagos</h3>
+            <p class="mb-0 text-muted">Aceptamos tarjetas, transferencias y convenios con aseguradoras seleccionadas.</p>
+          </div>
+          <div class="col-lg-5 fade-in">
+            <div class="d-flex flex-wrap gap-2">
+              <span class="chip"><i class="bi bi-credit-card me-1"></i> Tarjetas</span>
+              <span class="chip"><i class="bi bi-building me-1"></i> Aseguradoras</span>
+              <span class="chip"><i class="bi bi-wallet2 me-1"></i> Planes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================
+         SECCIÓN: ESPECIALIDADES
+         =================== -->
+    <section id="especialidades" class="py-5">
+      <div class="container">
+        <div class="text-center mb-5 fade-in">
+          <h2 class="display-6 fw-bold">Especialidades</h2>
+          <p class="lead">Tratamientos avanzados</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3 fade-in text-center"><i class="bi bi-align-bottom display-4 mb-2"></i><h5>Ortodoncia</h5><p class="text-muted">Brackets metálicos y estéticos.</p></div>
+          <div class="col-md-6 col-lg-3 fade-in text-center"><i class="bi bi-activity display-4 mb-2"></i><h5>Endodoncia</h5><p class="text-muted">Tratamiento de conductos con rotatorios.</p></div>
+          <div class="col-md-6 col-lg-3 fade-in text-center"><i class="bi bi-bandaid-fill display-4 mb-2"></i><h5>Cirugía</h5><p class="text-muted">Extracciones complejas y terceros molares.</p></div>
+          <div class="col-md-6 col-lg-3 fade-in text-center"><i class="bi bi-emoji-heart-eyes display-4 mb-2"></i><h5>Implantes</h5><p class="text-muted">Reemplazo de piezas con tornillos de titanio.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================
+         SECCIÓN: CONTACTO
+         - Info + formulario validado
+         ================= -->
+    <section id="contacto" class="py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5 fade-in">
+          <h2 class="display-6 fw-bold">Contacto y citas</h2>
+          <p class="lead">Escríbenos y agenda tu visita</p>
+        </div>
+        <div class="row g-4">
+          <!-- Información -->
+          <div class="col-lg-6 fade-in">
+            <div class="card h-100">
+              <div class="card-body p-4">
+                <h4 class="mb-3">Información</h4>
+                <div class="d-flex align-items-center mb-3"><i class="bi bi-geo-alt-fill text-primary me-3 fs-5"></i><div><strong>Dirección:</strong><br/>6a Avenida 1-23, Escuintla, Guatemala</div></div>
+                <div class="d-flex align-items-center mb-3"><i class="bi bi-telephone-fill text-primary me-3 fs-5"></i><div><strong>Teléfono:</strong><br/>+502 5555 0000</div></div>
+                <div class="d-flex align-items-center mb-3"><i class="bi bi-envelope-fill text-primary me-3 fs-5"></i><div><strong>Email:</strong><br/>citas@sonrisamas.gt</div></div>
+                <div class="d-flex align-items-center"><i class="bi bi-clock-fill text-primary me-3 fs-5"></i><div><strong>Horario:</strong><br/>Lun–Vie 8:00–17:00 · Sáb 8:00–12:00</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Formulario -->
+          <div class="col-lg-6 fade-in">
+            <div class="card h-100">
+              <div class="card-body p-4">
+                <h4 class="mb-3">Reservar cita</h4>
+                <!-- IMPORTANTE: IDs usados por JS para leer valores -->
+                <form id="contactForm">
+                  <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Correo</label>
+                    <input type="email" id="email" name="email" class="form-control" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" class="form-control" />
+                  </div>
+                  <div class="mb-3">
+                    <label for="mensaje" class="form-label">Motivo / Mensaje</label>
+                    <textarea id="mensaje" name="mensaje" rows="4" class="form-control" required></textarea>
+                  </div>
+                  <button class="btn btn-primary w-100" type="submit"><i class="bi bi-send me-2"></i> Enviar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======
+         FOOTER
+         ====== -->
+    <footer class="footer-custom py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-emoji-smile me-2"></i>Clínica Dental Sonrisa+</h5>
+            <p class="mb-3">Cuidamos tu sonrisa con calidez y excelencia clínica.</p>
+            <div class="d-flex gap-3">
+              <a class="text-white fs-4" href="#"><i class="bi bi-facebook"></i></a>
+              <a class="text-white fs-4" href="#"><i class="bi bi-instagram"></i></a>
+              <a class="text-white fs-4" href="#"><i class="bi bi-whatsapp"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2">
+            <h6 class="fw-bold mb-3">Navegación</h6>
+            <ul class="list-unstyled">
+              <li><a class="text-white-50 text-decoration-none" href="#inicio">Inicio</a></li>
+              <li><a class="text-white-50 text-decoration-none" href="#nosotros">Nosotros</a></li>
+              <li><a class="text-white-50 text-decoration-none" href="#servicios">Servicios</a></li>
+              <li><a class="text-white-50 text-decoration-none" href="#especialidades">Especialidades</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h6 class="fw-bold mb-3">Horario</h6>
+            <ul class="list-unstyled text-white-50">
+              <li>Lun–Vie: 8:00–17:00</li>
+              <li>Sáb: 8:00–12:00</li>
+              <li>Urgencias 24/7*</li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h6 class="fw-bold mb-3">Contacto</h6>
+            <ul class="list-unstyled text-white-50">
+              <li><i class="bi bi-geo-alt me-2"></i>Escuintla</li>
+              <li><i class="bi bi-telephone me-2"></i>+502 5555 0000</li>
+              <li><i class="bi bi-envelope me-2"></i>citas@sonrisamas.gt</li>
+            </ul>
+          </div>
+        </div>
+        <hr class="my-4 border-secondary"/>
+        <div class="row align-items-center">
+          <div class="col-md-6"><p class="mb-0 text-white-50">&copy; 2025 Sonrisa+. Todos los derechos reservados.</p></div>
+          <div class="col-md-6 text-md-end"><p class="mb-0 text-white-50">Desarrollado con <i class="bi bi-heart-fill text-warning"></i></p></div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Botón back-to-top -->
+    <button id="scrollTop" class="scroll-top"><i class="bi bi-arrow-up"></i></button>
+
+    <!-- ==============================================
+         SCRIPTS (JavaScript)
+         ==============================================
+         ORDEN:
+           1) Bootstrap Bundle
+           2) Script propio:
+              - Scroll suave
+              - Animación fade-in al hacer scroll
+              - Contadores (stats)
+              - Botón scroll-top
+              - Formulario (validación + hook a backend)
+              - Navbar activo dinámico (opcional)
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        /* =================== NAVEGACIÓN SUAVE =================== */
+        document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
+          const href = a.getAttribute("href"); if (!href || href === "#") return;
+          const t = document.querySelector(href); if (!t) return;
+          e.preventDefault();
+          const top = t.offsetTop - (document.querySelector(".navbar")?.offsetHeight || 0);
+          window.scrollTo({top, behavior:"smooth"});
+        }));
+
+        /* ============ ANIMACIONES EN SCROLL (fade-in) ============ */
+        const isIn = el => el.getBoundingClientRect().top < (innerHeight - 80);
+        const reveal = () => document.querySelectorAll(".fade-in").forEach(el => { if (isIn(el)) el.classList.add("visible"); });
+        reveal(); addEventListener("scroll", reveal);
+
+        /* =================== CONTADORES (STATS) =================== */
+        const runCounters = () => document.querySelectorAll(".counter").forEach(c => {
+          const target = parseInt(c.dataset.target || "0", 10); let v = 0; const step = Math.max(1, Math.floor(target/100));
+          const tick = () => { v += step; if(v<target){ c.textContent = v; requestAnimationFrame(tick);} else c.textContent = target; };
+          tick();
+        });
+        let started = false; const stats = document.querySelector(".stats-section");
+        const checkStats = () => { if (stats && !started && isIn(stats)) { started = true; runCounters(); } };
+        addEventListener("scroll", checkStats); checkStats();
+
+        /* =================== BOTÓN SCROLL-TOP =================== */
+        const btn = document.getElementById("scrollTop");
+        addEventListener("scroll", () => { btn.style.display = pageYOffset > 300 ? "block" : "none"; });
+        btn.addEventListener("click", () => scrollTo({top:0, behavior:"smooth"}));
+
+        /* ============ FORMULARIO: VALIDACIÓN + HOOK ============
+           - Para producción, descomenta fetch() y apunta al endpoint real.
+        */
+        const form = document.getElementById("contactForm");
+        if(form){
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const payload = {
+              nombre: form.nombre.value.trim(),
+              email: form.email.value.trim(),
+              telefono: form.telefono.value.trim(),
+              mensaje: form.mensaje.value.trim()
+            };
+            if(!payload.nombre || !payload.email || !payload.mensaje){ alert("Completa los campos obligatorios."); return; }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(!emailRegex.test(payload.email)){ alert("Correo inválido."); return; }
+            try{
+              // const res = await fetch("https://api.tu-dominio.com/citas", {
+              //   method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
+              // });
+              // if(!res.ok) throw new Error("Error de envío");
+              alert(`¡Gracias ${payload.nombre}! Te contactaremos para confirmar tu cita. (simulado)`);
+              form.reset();
+            }catch(err){ console.error(err); alert("No se pudo enviar. Intenta más tarde."); }
+          });
+        }
+
+        /* ======= Navbar activo dinámico (opcional) ======= */
+        // Puedes calcular la sección visible y alternar .active en los links.
+      });
+    </script>
+  </body>
+</html>

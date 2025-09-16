@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <!--
+      ==========================================================
+      PROYECTO: Iglesia de Cristo Ebenezer - Sitio Único (One-Page)
+      AUTOR: Gerson Daniel Montenegro de Leon
+      DESCRIPCIÓN:
+        - Este archivo HTML contiene TODO el sitio en una sola página.
+        - Incluye estilos (CSS) y scripts (JavaScript) incrustados.
+        - Está diseñado para funcionar con un simple servidor estático
+          (ej. Live Server de VS Code) sin necesidad de un backend.
+      OBJETIVOS CLAVE:
+        - Mantener una estetica agradable y atractiva.
+        - Añadir animaciones suaves, scroll, contadores y formulario validado.
+        - Dejar un GANCHO listo para conectar con un backend futuro.
+      CÓMO LEER ESTE ARCHIVO:
+        - Secciones principales: NAV, HERO (inicio), NOSOTROS, STATS,
+          SERVICIOS, MINISTERIOS, CONTACTO, FOOTER y JS al final.
+        - Cada bloque de código incluye comentarios explicativos.
+      ==========================================================
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iglesia de Cristo Ebenezer - Sitio Único</title>
+
+    <!--
+      Bootstrap 5 (CSS) y Bootstrap Icons desde CDN
+      - Proporcionan estilos base y componentes responsive.
+      - No requieren instalación local.
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+    <!--
+      =============================
+      ESTILOS PERSONALIZADOS (CSS)
+      =============================
+      - Usamos variables CSS para colores consistentes.
+      - La mayoría de clases siguen un naming correcto
+        para mantener la estética (navbar-custom, hero-section, service-card, etc.)
+      - Si migras a un CSS externo, pega este bloque en assets/css/custom.css
+        y enlázalo con <link rel="stylesheet" href="assets/css/custom.css">
+    -->
+    <style>
+      /* ---------- Variables de color globales ---------- */
+      :root {
+        --color-primario: #2c5aa0;   /* Color principal (navbar, fondos destacados) */
+        --color-secundario: #f8f9fa; /* Gris muy claro para secciones alternas */
+        --color-acento: #ffc107;     /* Amarillo para botones/íconos de acento */
+        --color-texto: #333;         /* Texto base */
+      }
+
+      /* ---------- Tipografía y cuerpo ---------- */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--color-texto);
+      }
+
+      /* ---------- Barra de navegación (fija) ---------- */
+      .navbar-custom {
+        background-color: var(--color-primario) !important; /* Forzamos color por encima de Bootstrap */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);           /* Sombra sutil */
+      }
+
+      /* ---------- Sección hero ----------
+         - Fondo con degradado + imagen (placeholder) centrada y cubierta.
+         - Puedes reemplazar la URL por una imagen tuya en ./MaterialDesign/
+      */
+      .hero-section {
+        background: linear-gradient(rgba(44,90,160,.8), rgba(44,90,160,.8)),
+                    url("/placeholder.svg?height=600&width=1200") center/cover;
+        color: #fff;
+        padding: 120px 0;      /* Altura vertical amplia */
+        text-align: center;
+      }
+
+      /* ---------- Tarjetas de servicios ---------- */
+      .service-card {
+        transition: transform .3s ease, box-shadow .3s ease; /* Hover suave */
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* ---------- Control de logo en navbar ---------- */
+      .logo {
+        height: 30px;      /* Ajusta alto: escala proporcionalmente */
+        width: auto;       /* Mantiene proporción */
+        object-fit: contain;
+      }
+
+      /* ---------- Sección de estadísticas ---------- */
+      .stats-section {
+        background-color: var(--color-primario);
+        color: #fff;
+      }
+
+      /* ---------- Footer ---------- */
+      .footer-custom {
+        background-color: #1a365d;
+        color: #fff;
+      }
+
+      /* ---------- Botón scroll-top (aparece al hacer scroll) ---------- */
+      .scroll-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--color-primario);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: none;      /* Se muestra/oculta con JS */
+        z-index: 1000;
+        transition: all .3s ease;
+      }
+      .scroll-top:hover { background:#1e3a5f; transform: scale(1.1); }
+
+      /* ---------- Animaciones “fade-in” en scroll ----------
+         - Inicialmente oculto y desplazado hacia abajo, luego visible.
+      */
+      .fade-in { opacity: 0; transform: translateY(30px); transition: all .6s ease; }
+      .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+      /* ---------- Utilidades extra ---------- */
+      .section-divider { height:1px; background: rgba(0,0,0,.06); margin: 0; }
+      .chip { display:inline-block; padding:.35rem .6rem; border-radius: 999px; background: #eef4ff; color:#0b4aa2; font-weight: 600; font-size:.85rem; }
+      .ratio > img.object-cover { object-fit: cover; }
+    </style>
+  </head>
+
+  <body>
+    <!--
+      =====================
+      NAVBAR FIJA (HEADER)
+      =====================
+      - Contiene enlaces a secciones internas (anchors #).
+      - En móvil se colapsa gracias a Bootstrap.
+    -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+      <div class="container">
+        <!-- Branding con logo + nombre -->
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2 py-0" href="#inicio">
+          <img src="./MaterialDesign/EBEN.png" alt="Logo Ebenezer" class="logo" />
+          <span>Iglesia Cristo Ebenezer Escuintla</span>
+        </a>
+
+        <!-- Botón hamburguesa para colapsar menú en móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menú de navegación (anchors internos) -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+            <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+            <li class="nav-item"><a class="nav-link" href="#ministerios">Ministerios</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!--
+      ============
+      HERO (INICIO)
+      ============
+      - Presentación principal del sitio.
+      - Botones que navegan a secciones internas.
+    -->
+    <section id="inicio" class="hero-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-9 fade-in">
+            <!-- “Chip” con frase temática -->
+            <span class="chip mb-3 d-inline-block">“Hasta aquí nos ayudó Jehová”</span>
+
+            <!-- Título y subtítulo -->
+            <h1 class="display-4 fw-bold mb-3">Bienvenidos a Cristo Ebenezer Escuintla</h1>
+            <p class="lead mb-4">Una comunidad de fe, esperanza y amor</p>
+
+            <!-- Botones de acción primaria/secundaria -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a href="#servicios" class="btn btn-warning btn-lg px-4">
+                <i class="bi bi-calendar-event me-2"></i> Ver Horarios
+              </a>
+              <a href="#contacto" class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-geo-alt me-2"></i> Visítanos
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ===================
+      SECCIÓN: NOSOTROS
+      ===================
+      - Columna de texto + columna de imagen 16:9
+      - Reemplaza ./MaterialDesign/Historia.jpg por tu foto real.
+    -->
+    <section id="nosotros" class="py-5">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <!-- Texto -->
+          <div class="col-lg-6 order-2 order-lg-1 fade-in">
+            <h2 class="display-5 fw-bold mb-4">Nuestra Historia</h2>
+            <p class="lead mb-4">
+              La Iglesia de Cristo Ebenezer ha sido un faro de esperanza en nuestra comunidad por más de 25 años,
+              predicando el evangelio de Jesucristo con amor y dedicación.
+            </p>
+            <p class="mb-4">
+              “Ebenezer” significa “piedra de ayuda”: recordatorio de que el Señor ha sido y seguirá siendo nuestro sustento.
+            </p>
+            <!-- Lista de valores/atributos -->
+            <div class="row g-3">
+              <div class="col-6"><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i><span>Predicación Bíblica</span></div></div>
+              <div class="col-6"><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i><span>Comunidad Unida</span></div></div>
+              <div class="col-6"><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i><span>Servicio Social</span></div></div>
+              <div class="col-6"><div class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i><span>Crecimiento Espiritual</span></div></div>
+            </div>
+          </div>
+
+          <!-- Imagen -->
+          <div class="col-lg-6 order-1 order-lg-2 fade-in">
+            <!-- ratio 16:9 asegura que la imagen sea responsive -->
+            <div class="ratio ratio-16x9 rounded shadow overflow-hidden">
+              <img src="./MaterialDesign/Historia.jpg" alt="Congregación de la Iglesia Cristo Ebenezer" class="w-100 h-100 object-cover" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ===================
+      SECCIÓN: ESTADÍSTICAS
+      ===================
+      - 4 métricas con icono y contador animado (0 → data-target)
+      - La animación se dispara cuando la sección entra en vista.
+    -->
+    <section class="stats-section py-5">
+      <div class="container">
+        <div class="row text-center">
+          <div class="col-md-3 mb-4 fade-in">
+            <i class="bi bi-people-fill display-4 mb-3"></i>
+            <h3 class="counter" data-target="500">0</h3>
+            <p>Miembros Activos</p>
+          </div>
+          <div class="col-md-3 mb-4 fade-in">
+            <i class="bi bi-calendar-heart display-4 mb-3"></i>
+            <h3 class="counter" data-target="25">0</h3>
+            <p>Años de Servicio</p>
+          </div>
+          <div class="col-md-3 mb-4 fade-in">
+            <i class="bi bi-house-door display-4 mb-3"></i>
+            <h3 class="counter" data-target="12">0</h3>
+            <p>Ministerios Activos</p>
+          </div>
+          <div class="col-md-3 mb-4 fade-in">
+            <i class="bi bi-heart-fill display-4 mb-3"></i>
+            <h3 class="counter" data-target="1000">0</h3>
+            <p>Vidas Transformadas</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ==================
+      SECCIÓN: SERVICIOS
+      ==================
+      - Grid de 3 tarjetas con horarios.
+      - En móvil se apilan (gracias a Bootstrap).
+    -->
+    <section id="servicios" class="py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5 fade-in">
+          <h2 class="display-5 fw-bold">Nuestros Servicios</h2>
+          <p class="lead">Únete a nosotros en adoración y comunión</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Servicio Dominical -->
+          <div class="col-lg-4 fade-in">
+            <div class="card service-card h-100">
+              <div class="card-body text-center p-4">
+                <i class="bi bi-sun display-4 text-warning mb-3"></i>
+                <h4 class="card-title">Servicio Dominical</h4>
+                <p class="card-text">Culto principal con predicación, alabanza y comunión.</p>
+                <div class="mt-3"><strong>Domingos</strong><br /><span class="text-muted">9:00 AM - 11:00 AM</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estudio Bíblico -->
+          <div class="col-lg-4 fade-in">
+            <div class="card service-card h-100">
+              <div class="card-body text-center p-4">
+                <i class="bi bi-book display-4 text-primary mb-3"></i>
+                <h4 class="card-title">Estudio Bíblico</h4>
+                <p class="card-text">Profundizamos en la Palabra de Dios con estudio detallado.</p>
+                <div class="mt-3"><strong>Miércoles</strong><br /><span class="text-muted">7:00 PM - 8:30 PM</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Servicio de Oración -->
+          <div class="col-lg-4 fade-in">
+            <div class="card service-card h-100">
+              <div class="card-body text-center p-4">
+                <i class="bi bi-brightness-high-fill display-4 text-success mb-3"></i>
+                <h4 class="card-title">Servicio de Oración</h4>
+                <p class="card-text">Tiempo especial de oración e intercesión comunitaria.</p>
+                <div class="mt-3"><strong>Viernes</strong><br /><span class="text-muted">7:00 PM - 8:00 PM</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque secundario con llamada a redes/eventos -->
+        <hr class="my-5 section-divider">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7 fade-in">
+            <h3 class="fw-bold mb-3">Ubicación y eventos especiales</h3>
+            <p class="mb-0 text-muted">Para vigilias, retiros y actividades extraordinarias, consulta nuestras redes sociales oficiales.</p>
+          </div>
+          <div class="col-lg-5 fade-in">
+            <div class="d-flex flex-wrap gap-2">
+              <span class="chip"><i class="bi bi-facebook me-1"></i> Facebook</span>
+              <span class="chip"><i class="bi bi-instagram me-1"></i> Instagram</span>
+              <span class="chip"><i class="bi bi-youtube me-1"></i> YouTube</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ===================
+      SECCIÓN: MINISTERIOS
+      ===================
+      - Grid de 8 “tarjetas simples” (ícono + título + texto)
+      - Puedes aumentar o reducir según tus áreas reales.
+    -->
+    <section id="ministerios" class="py-5">
+      <div class="container">
+        <div class="text-center mb-5 fade-in">
+          <h2 class="display-5 fw-bold">Nuestros Ministerios</h2>
+          <p class="lead">Sirviendo a Dios en diferentes áreas</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-music-note-beamed display-4 text-primary mb-3"></i><h5>Alabanza</h5><p class="text-muted">Adoración a través de la música</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-people display-4 text-success mb-3"></i><h5>Juvenil</h5><p class="text-muted">Formando a la próxima generación</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-heart display-4 text-danger mb-3"></i><h5>Damas</h5><p class="text-muted">Fortaleciendo a las mujeres en fe</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-gift display-4 text-warning mb-3"></i><h5>Niños</h5><p class="text-muted">Enseñando a los pequeños</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-person-hearts display-4 mb-3"></i><h5>Matrimonios</h5><p class="text-muted">Creciendo en unidad y amor</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-shield-check display-4 mb-3"></i><h5>Ujieres</h5><p class="text-muted">Orden y bienvenida</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-camera-video display-4 mb-3"></i><h5>Medios</h5><p class="text-muted">Transmisión y producción</p></div></div>
+          <div class="col-md-6 col-lg-3 fade-in"><div class="text-center"><i class="bi bi-globe-americas display-4 mb-3"></i><h5>Misiones</h5><p class="text-muted">Alcanzando a otros</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      =================
+      SECCIÓN: CONTACTO
+      =================
+      - Información de contacto + formulario con validación básica.
+      - Hook listo para integrarse con un backend (ver JS).
+    -->
+    <section id="contacto" class="py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5 fade-in">
+          <h2 class="display-5 fw-bold">Contáctanos</h2>
+          <p class="lead">Estamos aquí para servirte</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Tarjeta: Información general -->
+          <div class="col-lg-6 fade-in">
+            <div class="card h-100">
+              <div class="card-body p-4">
+                <h4 class="card-title mb-4">Información de Contacto</h4>
+
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-geo-alt-fill text-primary me-3 fs-5"></i>
+                  <div><strong>Dirección:</strong><br/>Calle Principal #123, Centro<br/>Ciudad, Estado, CP 12345</div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-telephone-fill text-primary me-3 fs-5"></i>
+                  <div><strong>Teléfono:</strong><br/>+1 (555) 123-4567</div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-envelope-fill text-primary me-3 fs-5"></i>
+                  <div><strong>Email:</strong><br/>info@cristoebenezer.org</div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-clock-fill text-primary me-3 fs-5"></i>
+                  <div><strong>Horarios de Oficina:</strong><br/>Lunes a Viernes: 9:00 AM - 5:00 PM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta: Formulario -->
+          <div class="col-lg-6 fade-in">
+            <div class="card h-100">
+              <div class="card-body p-4">
+                <h4 class="card-title mb-4">Envíanos un Mensaje</h4>
+
+                <!--
+                  IMPORTANTE:
+                  - Los IDs del formulario se usan en JS para leer valores.
+                  - name="" no es estrictamente necesario aquí, pero útil si luego
+                    envías por <form action="..."> o FormData al backend.
+                -->
+                <form id="contactForm">
+                  <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" name="email" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefono" name="telefono" />
+                  </div>
+                  <div class="mb-3">
+                    <label for="mensaje" class="form-label">Mensaje</label>
+                    <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-send me-2"></i> Enviar Mensaje
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ======
+      FOOTER
+      ======
+      - Enlaces rápidos a secciones y datos de contacto/hora.
+    -->
+    <footer class="footer-custom py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-house-heart-fill me-2"></i>Iglesia Cristo Ebenezer</h5>
+            <p class="mb-3">"Hasta aquí nos ayudó Jehová" - Sirviendo a nuestra comunidad con amor, fe y esperanza desde 1998.</p>
+            <div class="d-flex gap-3">
+              <a href="#" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="text-white fs-4"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="text-white fs-4"><i class="bi bi-youtube"></i></a>
+              <a href="#" class="text-white fs-4"><i class="bi bi-envelope"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-2">
+            <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
+            <ul class="list-unstyled">
+              <li><a href="#inicio" class="text-white-50 text-decoration-none">Inicio</a></li>
+              <li><a href="#nosotros" class="text-white-50 text-decoration-none">Nosotros</a></li>
+              <li><a href="#servicios" class="text-white-50 text-decoration-none">Servicios</a></li>
+              <li><a href="#ministerios" class="text-white-50 text-decoration-none">Ministerios</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h6 class="fw-bold mb-3">Horarios de Servicio</h6>
+            <ul class="list-unstyled text-white-50">
+              <li>Domingo: 9:00 AM - 11:00 AM</li>
+              <li>Miércoles: 7:00 PM - 8:30 PM</li>
+              <li>Viernes: 7:00 PM - 8:00 PM</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h6 class="fw-bold mb-3">Contacto</h6>
+            <ul class="list-unstyled text-white-50">
+              <li><i class="bi bi-geo-alt me-2"></i>Calle Principal #123</li>
+              <li><i class="bi bi-telephone me-2"></i>+1 (555) 123-4567</li>
+              <li><i class="bi bi-envelope me-2"></i>info@cristoebenezer.org</li>
+            </ul>
+          </div>
+        </div>
+
+        <hr class="my-4 border-secondary" />
+
+        <div class="row align-items-center">
+          <div class="col-md-6"><p class="mb-0 text-white-50">&copy; 2024 Iglesia de Cristo Ebenezer. Todos los derechos reservados.</p></div>
+          <div class="col-md-6 text-md-end"><p class="mb-0 text-white-50">Desarrollado con <i class="bi bi-heart-fill text-danger"></i> para la gloria de Dios</p></div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Botón de scroll hacia arriba (se muestra con JS) -->
+    <button class="scroll-top" id="scrollTop"><i class="bi bi-arrow-up"></i></button>
+
+    <!-- ==============================================
+         SCRIPTS (JavaScript)
+         ==============================================
+         ORDEN:
+           1) Bootstrap Bundle (para el navbar móvil, etc.)
+           2) Script propio:
+              - Scroll suave
+              - Animación de fade-in al hacer scroll
+              - Contadores en estadísticas
+              - Botón scroll-top
+              - Formulario de contacto (validación + hook a backend)
+              - Navbar activo dinámico
+              - Mensajes de bienvenida / domingo
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Ejecutamos todo cuando el DOM está listo:
+      document.addEventListener("DOMContentLoaded", function () {
+        /* =================== NAVEGACIÓN SUAVE ===================
+           - Captura todos los enlaces <a> que empiezan con #
+           - Calcula la altura del navbar fijo para aterrizar exacto
+             sobre cada sección al hacer scroll
+        */
+        const navLinks = document.querySelectorAll('a[href^="#"]');
+        navLinks.forEach(link => {
+          link.addEventListener("click", function (e) {
+            const href = this.getAttribute("href");
+            // Si href es solo "#", no hacemos nada especial
+            if (!href || href === "#") return;
+            const target = document.querySelector(href);
+            if (!target) return;
+            e.preventDefault();
+            const navbarH = document.querySelector(".navbar")?.offsetHeight || 0;
+            const top = target.offsetTop - navbarH;
+            window.scrollTo({ top, behavior: "smooth" });
+          });
+        });
+
+        /* =================== ANIMACIONES EN SCROLL ===================
+           - Agrega la clase .visible a los elementos .fade-in cuando
+             entran en el viewport (para efectos suaves)
+        */
+        function isInView(el) {
+          const r = el.getBoundingClientRect();
+          return r.top < (window.innerHeight || document.documentElement.clientHeight) - 80;
+        }
+        function reveal() {
+          document.querySelectorAll(".fade-in").forEach(el => {
+            if (isInView(el)) el.classList.add("visible");
+          });
+        }
+        reveal();
+        window.addEventListener("scroll", reveal);
+
+        /* =================== CONTADORES (STATS) ===================
+           - Aumentan de 0 a data-target de forma animada.
+           - Se inician una sola vez cuando la sección entra en vista.
+        */
+        function animateCounters() {
+          document.querySelectorAll(".counter").forEach(counter => {
+            const target = parseInt(counter.dataset.target || "0", 10);
+            const step = Math.max(1, Math.floor(target / 100)); // 100 "frames"
+            let val = 0;
+            const tick = () => {
+              val += step;
+              if (val < target) { counter.textContent = val; requestAnimationFrame(tick); }
+              else counter.textContent = target;
+            };
+            tick();
+          });
+        }
+        const stats = document.querySelector(".stats-section");
+        let started = false;
+        function checkStats() {
+          if (!stats || started) return;
+          if (isInView(stats)) { started = true; animateCounters(); }
+        }
+        window.addEventListener("scroll", checkStats);
+        checkStats();
+
+        /* =================== BOTÓN SCROLL-TOP ===================
+           - Muestra el botón cuando el scroll vertical > 300px
+           - Al hacer clic, regresa arriba con scroll suave
+        */
+        const scrollTopBtn = document.getElementById("scrollTop");
+        window.addEventListener("scroll", () => {
+          scrollTopBtn.style.display = window.pageYOffset > 300 ? "block" : "none";
+        });
+        scrollTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+        /* =================== FORMULARIO: CONTACTO ===================
+           - Validación mínima (campos obligatorios + email válido).
+           - Hook listo para backend: fetch("/api/contacto")
+           - Por ahora, simula el envío con alert (si no hay backend)
+        */
+        const form = document.getElementById("contactForm");
+        if (form) {
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const payload = {
+              nombre: form.nombre.value.trim(),
+              email: form.email.value.trim(),
+              telefono: form.telefono.value.trim(),
+              mensaje: form.mensaje.value.trim()
+            };
+            if (!payload.nombre || !payload.email || !payload.mensaje) {
+              alert("Por favor, completa los campos obligatorios.");
+              return;
+            }
+            const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+            if (!emailRegex.test(payload.email)) {
+              alert("Por favor, ingresa un email válido.");
+              return;
+            }
+
+            try {
+              // >>>> CUANDO TENGAS BACKEND: cambia esta URL por tu endpoint real
+              // const res = await fetch("/api/contacto", {
+              //   method: "POST",
+              //   headers: {"Content-Type":"application/json"},
+              //   body: JSON.stringify(payload)
+              // });
+              // if (!res.ok) throw new Error("Error al enviar");
+              // alert(`¡Gracias ${payload.nombre}! Tu mensaje ha sido enviado.`);
+
+              // Simulación (sin backend):
+              alert(`¡Gracias ${payload.nombre}! Tu mensaje ha sido enviado. (simulado)`);
+              form.reset();
+            } catch (err) {
+              console.error(err);
+              alert("Ocurrió un problema al enviar tu mensaje. Inténtalo más tarde.");
+            }
+          });
+        }
+
+        /* =================== NAVBAR ACTIVO DINÁMICO ===================
+           - Resalta el enlace actual según la sección visible.
+        */
+        function updateActive() {
+          const sections = document.querySelectorAll("section[id]");
+          const links = document.querySelectorAll(".navbar-nav .nav-link");
+          let current = "";
+          sections.forEach(sec => {
+            const top = sec.offsetTop - 120;               // margen superior de activación
+            const bottom = top + sec.offsetHeight;
+            if (window.pageYOffset >= top && window.pageYOffset < bottom) {
+              current = "#" + sec.id;
+            }
+          });
+          links.forEach(a => {
+            a.classList.toggle("active", a.getAttribute("href") === current);
+          });
+        }
+        window.addEventListener("scroll", updateActive);
+        updateActive();
+
+        /* =================== MENSAJES DE BIENVENIDA ===================
+           - Mensaje contextual en consola según hora del día y domingo.
+        */
+        (function bienvenida() {
+          const h = new Date().getHours();
+          const saludo = h < 12 ? "¡Buenos días!" : (h < 18 ? "¡Buenas tardes!" : "¡Buenas noches!");
+          console.log(`${saludo} Bienvenido a la Iglesia Cristo Ebenezer`);
+          if (new Date().getDay() === 0) console.log("🎉 ¡Hoy es domingo! Te esperamos a las 9:00 AM");
+        })();
+      });
+    </script>
+  </body>
+</html>

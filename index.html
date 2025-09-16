@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es" data-bs-theme="dark">
+<head>
+  <!-- =====================================================================
+    ARCHIVO: index.html (Portafolio — Gerson Montenegro De Leon)
+    OBJETIVO: Sitio estático de una sola página (one‑page) con HTML5 + Bootstrap 5 + JS
+              orientado a frontend con componentes Bootstrap. Código hiper‑comentado.
+
+    CONTENIDO PRINCIPAL:
+      - Head con meta básicas, SEO y CDNs de Bootstrap + Icons
+      - CSS mínimo inline con variables y FIX para navbar fija
+      - JSON‑LD de Persona para SEO (datos estructurados)
+      - Secciones: NAV, HERO, SOBRE MÍ, HABILIDADES, PROYECTOS, EDUCACIÓN,
+                   CONTACTO, FOOTER
+      - Scripts: año dinámico, tema claro/oscuro persistente y validación de formulario
+
+    NOTAS DE MANTENIMIENTO:
+      - Para separar estilos/JS: crea /assets/css/custom.css y /assets/js/app.js
+      - Sustituye imágenes por rutas reales. Aquí se usa /assets/img/gerson.png
+  ====================================================================== -->
+
+  <!-- ===== Meta básicas ===== -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Título visible en la pestaña del navegador -->
+  <title>Portafolio — Gerson Montenegro De Leon</title>
+  <!-- Descripción corta para motores de búsqueda y previsualizaciones -->
+  <meta name="description" content="Portafolio profesional de Gerson Montenegro De Leon: estudiante de Ingeniería en Sistemas apasionado por el desarrollo web frontend con HTML5, Bootstrap y JavaScript." />
+
+  <!-- ===== Estilos de terceros (CDN) ===== -->
+  <!-- Bootstrap 5.3.3: sistema de grillas, utilidades y componentes -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons: set de iconos como tipografía -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- ===== Estilos propios (CSS mínimo) =====
+       - Usamos utilidades Bootstrap siempre que sea posible para evitar CSS extra.
+       - Aquí solo definimos variables de color, correcciones y algunos efectos. -->
+  <style>
+    /* Variables globales reutilizables. Cambia --accent para rebrand. */
+    :root { --accent: #6f42c1; /* morado */  --nav-h: 72px; /* alto navbar (aprox) */ }
+
+    /* Desplazamiento suave al navegar por anclas (#seccion) */
+    html { scroll-behavior: smooth; }
+
+    /* FIX 1: La navbar es fixed-top y puede tapar el inicio del contenido.
+       Añadir padding-top igual a la altura de la navbar evita el solapamiento. */
+    body { padding-top: var(--nav-h); }
+
+    /* FIX 2: Cuando navegamos a una ancla, el navegador coloca el elemento
+       pegado a la parte superior. Si hay barra fija, el título quedaría oculto.
+       scroll-margin-top agrega margen superior virtual al destino. */
+    section { scroll-margin-top: calc(var(--nav-h) + 12px); }
+
+    /* Degradado de marca aplicado sobre texto (clip de fondo). */
+    .brand-gradient {
+      background: linear-gradient(135deg, var(--accent), #20c997);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+    /* Fondo decorativo ligero para el héroe (radiales, baratos en GPU). */
+    .hero { background:
+      radial-gradient(1200px 600px at 10% -20%, rgba(111,66,193,.25), transparent),
+      radial-gradient(1200px 600px at 90% 120%, rgba(32,201,151,.2), transparent);
+    }
+
+    /* Sombras suaves reutilizables para tarjetas/containers. */
+    .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+
+    /* Sutil elevación en hover para tarjetas. */
+    .card:hover { transform: translateY(-4px); transition: .25s ease; }
+
+    /* Chip/etiqueta para destacar el estado de estudiante. */
+    .tag { border: 1px dashed rgba(255,255,255,.25); padding: .25rem .5rem; border-radius: 999px; font-size: .8rem; }
+
+    /* Avatar pequeño en la barra de navegación. */
+    .avatar-img{ width: 40px; height: 40px; border-radius:50%; object-fit:cover; border: 2px solid rgba(255,255,255,.6);} 
+
+    /* Foto grande en el héroe (recortada circular). */
+    .profile-pic-lg{ width:160px;height:160px;border-radius:50%;object-fit:cover;display:block;margin:0 auto; box-shadow:0 4px 16px rgba(0,0,0,.25);} 
+
+    /* Accesibilidad: resaltar foco visible en elementos interactivos. */
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  </style>
+
+  <!-- ===== Datos estructurados (SEO) =====
+       - Describe a la persona para motores de búsqueda usando Schema.org. -->
+  <script type="application/ld+json">
+  {"@context": "https://schema.org", "@type": "Person", "name": "Gerson Montenegro De Leon", "jobTitle": "Desarrollador Frontend (Bootstrap)", "alumniOf": "Ingeniería en Sistemas", "knowsAbout": ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Git", "Responsive Web"], "url": "", "sameAs": []}
+  </script>
+</head>
+<body>
+
+  <!-- =============================== NAVBAR ===============================
+       - Fija arriba con fixed-top (por eso aplicamos los FIX en CSS).
+       - Colapsable en móvil vía el botón .navbar-toggler (data-bs-* de Bootstrap).
+       - Contiene enlaces a secciones internas (#sobre-mi, #habilidades, etc.). -->
+  <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary border-bottom">
+    <div class="container">
+      <!-- Marca: foto + nombre. El alt de la imagen describe a la persona. -->
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#inicio" aria-label="Ir al inicio">
+        <img src="assets/img/gerson.png" alt="Foto de Gerson Montenegro De Leon" class="avatar-img">
+        <span class="fw-bold">Gerson Montenegro De Leon</span>
+      </a>
+
+      <!-- Botón hamburguesa visible en pantallas pequeñas -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navItems" aria-controls="navItems" aria-expanded="false" aria-label="Alternar navegación">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Enlaces del menú → anclas internas -->
+      <div class="collapse navbar-collapse" id="navItems">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="#sobre-mi">Sobre mí</a></li>
+          <li class="nav-item"><a class="nav-link" href="#habilidades">Habilidades</a></li>
+          <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#educacion">Educación</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+          <!-- Conmutador de tema (claro/oscuro) accesible -->
+          <li class="nav-item ms-lg-2">
+            <button id="themeToggle" class="btn btn-outline-secondary btn-sm" type="button" aria-pressed="false" aria-label="Cambiar tema">
+              <i class="bi bi-moon-stars"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================================ HERO ================================
+       - Mensaje inicial + CTA + foto. Fondo con gradientes discretos.
+       - La etiqueta .tag resalta "Estudiante de Ingeniería en Sistemas". -->
+  <header id="inicio" class="hero py-5">
+    <div class="container py-4">
+      <div class="row g-4 align-items-center justify-content-between">
+        <!-- Columna: texto principal + CTA -->
+        <div class="col-lg-7">
+          <span class="tag mb-3 d-inline-flex align-items-center gap-2"><i class="bi bi-mortarboard"></i> Estudiante de Ingeniería en Sistemas</span>
+          <h1 class="display-5 fw-bold lh-1">Frontend con <span class="brand-gradient">HTML5 + Bootstrap + JavaScript</span></h1>
+          <p class="lead mt-3">Soy un desarrollador frontend orientado a componentes Bootstrap: diseño interfaces limpias, responsivas y accesibles. Me apasiona transformar ideas en experiencias web reales y de alto rendimiento.</p>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <a href="#proyectos" class="btn btn-primary"><i class="bi bi-view-stacked me-2"></i>Ver proyectos</a>
+            <a href="#contacto" class="btn btn-outline-primary"><i class="bi bi-envelope me-2"></i>Contactar</a>
+            <!-- Enlace de CV: apunta a tu PDF hospedado (Drive/GitHub/Cloud) -->
+            <a href="#" class="btn btn-outline-secondary" target="_blank" rel="noopener"><i class="bi bi-file-earmark-arrow-down me-2"></i>Descargar CV</a>
+          </div>
+        </div>
+
+        <!-- Columna: foto de perfil y ubicación -->
+        <div class="col-lg-4 text-center">
+          <img src="assets/img/gerson.png" alt="Gerson Montenegro De Leon" class="profile-pic-lg">
+          <div class="small text-secondary mt-2">Guatemala — Desarrollador Frontend</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================== SOBRE MÍ ============================== -->
+  <section id="sobre-mi" class="py-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <h2 class="h1 fw-bold mb-3">Sobre mí</h2>
+          <p class="mb-0">Soy <strong>Gerson Montenegro De Leon</strong>, estudiante de <strong>Ingeniería en Sistemas</strong> con enfoque en <strong>desarrollo web frontend</strong>. Me especializo en construir interfaces con Bootstrap, siguiendo buenas prácticas de semántica, accesibilidad y responsive design. Disfruto trabajar con utilidades de Bootstrap para prototipar rápido y luego refinar la UI con JavaScript nativo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= HABILIDADES ============================ -->
+  <section id="habilidades" class="py-5 bg-body-tertiary border-top border-bottom">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <h2 class="h1 fw-bold mb-0">Habilidades</h2>
+        <div class="small text-secondary">Siempre aprendiendo y construyendo</div>
+      </div>
+
+      <!-- Grid responsive: 4 tarjetas en escritorio, 2 en tablet, 1 en móvil -->
+      <div class="row g-4">
+        <!-- Tarjeta: Frontend -->
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-soft">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-window-sidebar fs-4"></i><h3 class="h5 mb-0">Frontend</h3></div>
+              <p class="small">HTML5 semántico, Bootstrap Grid/Utilities, componentes, formularios y validación.</p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-primary">HTML5</span>
+                <span class="badge text-bg-primary">Bootstrap 5</span>
+                <span class="badge text-bg-primary">Responsivo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta: JavaScript -->
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-soft">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-braces fs-4"></i><h3 class="h5 mb-0">JavaScript</h3></div>
+              <p class="small">ES6+, DOM API, eventos, módulos, accesibilidad y pequeñas interacciones.</p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-success">ES6+</span>
+                <span class="badge text-bg-success">Fetch API</span>
+                <span class="badge text-bg-success">Vanilla JS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta: Buenas prácticas -->
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-soft">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-diagram-3 fs-4"></i><h3 class="h5 mb-0">Buenas prácticas</h3></div>
+              <p class="small">Accesibilidad (ARIA), SEO básico, rendimiento, estándares y legibilidad.</p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-warning">A11y</span>
+                <span class="badge text-bg-warning">SEO</span>
+                <span class="badge text-bg-warning">Performance</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta: Herramientas -->
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-soft">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-git fs-4"></i><h3 class="h5 mb-0">Herramientas</h3></div>
+              <p class="small">Git/GitHub, VS Code, extensiones para productividad y control de versiones.</p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-info">Git</span>
+                <span class="badge text-bg-info">GitHub</span>
+                <span class="badge text-bg-info">VS Code</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== PROYECTOS ============================= -->
+  <section id="proyectos" class="py-5">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <h2 class="h1 fw-bold mb-0">Proyectos</h2>
+        <!-- Enlace general al perfil de GitHub (ajusta URL real) -->
+        <a class="btn btn-outline-secondary btn-sm" href="https://github.com/gersonM20" target="_blank" rel="noopener"><i class="bi bi-github me-2"></i>Ver GitHub</a>
+      </div>
+
+      <!-- Grid de 3 proyectos -->
+      <div class="row g-4">
+        <!-- Proyecto 1 -->
+        <div class="col-md-6 col-lg-4">
+          <article class="card h-100 border-0 shadow-soft">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Vista previa del proyecto 1" loading="lazy">
+            <div class="card-body d-flex flex-column">
+              <h3 class="h5">Iglesia — One‑Page</h3>
+              <p class="small text-secondary">Sitio institucional con animaciones, contadores y formulario validado.</p>
+              <div class="mt-auto d-flex flex-wrap gap-2">
+                <span class="badge text-bg-primary">Bootstrap</span>
+                <span class="badge text-bg-secondary">HTML5</span>
+                <span class="badge text-bg-dark">JS</span>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 d-flex gap-2">
+              <a class="btn btn-sm btn-primary" href="./proyectos/iglesia/index.html" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>Demo</a>
+              <a class="btn btn-sm btn-outline-secondary" href="https://github.com/gersonM20/Iglesia-Ebenezer-One-Page.git" target="_blank" rel="noopener"><i class="bi bi-code-slash me-1"></i>Código</a>
+            </div>
+          </article>
+        </div>
+
+        <!-- Proyecto 2 -->
+        <div class="col-md-6 col-lg-4">
+          <article class="card h-100 border-0 shadow-soft">
+            <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Clínica dental" loading="lazy">
+            <div class="card-body d-flex flex-column">
+              <h3 class="h5">Clínica — One‑Page</h3>
+              <p class="small text-secondary">One‑page de salud con KPIs animados, chips y scroll‑top.</p>
+              <div class="mt-auto d-flex flex-wrap gap-2">
+                <span class="badge text-bg-primary">Bootstrap</span>
+                <span class="badge text-bg-secondary">HTML5</span>
+                <span class="badge text-bg-dark">JS</span>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 d-flex gap-2">
+              <a class="btn btn-sm btn-primary" href="./proyectos/clinica/index_comentado.html" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>Demo</a>
+              <a class="btn btn-sm btn-outline-secondary" href="https://github.com/gersonM20/Clinica_Dental_Sonrisa.git" target="_blank" rel="noopener"><i class="bi bi-code-slash me-1"></i>Código</a>
+            </div>
+          </article>
+        </div>
+
+        <!-- Proyecto 3 -->
+        <div class="col-md-6 col-lg-4">
+          <article class="card h-100 border-0 shadow-soft">
+            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop" class="card-img-top" alt="Landing jQuery" loading="lazy">
+            <div class="card-body d-flex flex-column">
+              <h3 class="h5">Landing “UI Snippets” (jQuery)</h3>
+              <p class="small text-secondary">Landing que replica patrones de tus sitios pero con interacciones jQuery.</p>
+              <div class="mt-auto d-flex flex-wrap gap-2">
+                <span class="badge text-bg-primary">Bootstrap</span>
+                <span class="badge text-bg-secondary">jQuery</span>
+                <span class="badge text-bg-dark">JS</span>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 d-flex gap-2">
+              <a class="btn btn-sm btn-primary" href="./proyectos/landing-jquery/index_landing.html" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>Demo</a>
+              <a class="btn btn-sm btn-outline-secondary" href="https://github.com/gersonM20/Landing_Bootstrap.git" target="_blank" rel="noopener"><i class="bi bi-code-slash me-1"></i>Código</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== EDUCACIÓN ============================= -->
+  <section id="educacion" class="py-5 bg-body-tertiary border-top border-bottom">
+    <div class="container">
+      <h2 class="h1 fw-bold mb-4">Educación</h2>
+      <div class="row g-4">
+        <!-- Bloque: carrera -->
+        <div class="col-md-6">
+          <div class="card h-100 border-0 shadow-soft">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="h5 mb-0">Ingeniería en Sistemas</h3>
+                <span class="badge text-bg-secondary">En curso</span>
+              </div>
+              <div class="small text-secondary">Universidad / Escuintla — 20XX–Presente</div>
+              <ul class="small mt-3 mb-0">
+                <li>Programación, estructuras de datos.</li>
+                <li>Redes, bases de datos, análisis de sistemas.</li>
+                <li>Desarrollo web: HTML, CSS, JavaScript, Bootstrap.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque: cursos -->
+        <div class="col-md-6">
+          <div class="card h-100 border-0 shadow-soft">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="h5 mb-0">Cursos</h3>
+                <i class="bi bi-patch-check-fill text-success" aria-hidden="true"></i>
+              </div>
+              <ul class="small mb-0">
+                <li>Bootstrap 5 — <span class="text-secondary">Plataforma XYZ</span></li>
+                <li>Accesibilidad Web — <span class="text-secondary">WAI-ARIA básico</span></li>
+                <li>Git y GitHub para desarrolladores</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== CONTACTO ============================= -->
+  <section id="contacto" class="py-5">
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <!-- Columna izquierda: formulario validado con clases Bootstrap -->
+        <div class="col-lg-6">
+          <h2 class="h1 fw-bold">Contacto</h2>
+          <p class="text-secondary">¿Tienes una idea o proyecto? Escríbeme y con gusto conversamos.</p>
+
+          <!-- Formulario: usa atributos required + patrón propio de validación de Bootstrap.
+               action="mailto" es meramente ilustrativo; para producción integra servicio de correo. -->
+          <form id="contactForm" class="needs-validation" novalidate action="mailto:tu-correo@ejemplo.com" method="post" enctype="text/plain">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="name" name="Nombre" placeholder="Tu nombre" required>
+              <div class="invalid-feedback">Por favor, indica tu nombre.</div>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" id="email" name="Email" placeholder="nombre@correo.com" required>
+              <div class="invalid-feedback">Ingresa un correo válido.</div>
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">Mensaje</label>
+              <textarea class="form-control" id="message" name="Mensaje" rows="4" placeholder="Cuéntame sobre tu proyecto..." required></textarea>
+              <div class="invalid-feedback">Escribe un mensaje.</div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary" type="submit"><i class="bi bi-send me-2"></i>Enviar</button>
+              <button class="btn btn-outline-secondary" type="reset"><i class="bi bi-arrow-counterclockwise me-2"></i>Limpiar</button>
+            </div>
+            <p class="small text-secondary mt-2"><i class="bi bi-info-circle me-1"></i>Para enviar desde el sitio en producción, integra un servicio de correo (Brevo/EmailJS/API propia).</p>
+          </form>
+        </div>
+
+        <!-- Columna derecha: datos y enlaces -->
+        <div class="col-lg-5 ms-auto">
+          <div class="card border-0 shadow-soft">
+            <div class="card-body">
+              <h3 class="h5 mb-3">Redes y contacto</h3>
+              <ul class="list-unstyled small mb-0">
+                <li class="mb-2"><i class="bi bi-envelope me-2"></i><a class="link-body-emphasis" href="mailto:tu-correo@ejemplo.com">tu-correo@ejemplo.com</a></li>
+                <li class="mb-2"><i class="bi bi-github me-2"></i><a class="link-body-emphasis" target="_blank" rel="noopener" href="#">github.com/gerson</a></li>
+                <li class="mb-2"><i class="bi bi-linkedin me-2"></i><a class="link-body-emphasis" target="_blank" rel="noopener" href="#">linkedin.com/in/gerson</a></li>
+                <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>Guatemala — Remoto</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ FOOTER ============================== -->
+  <footer class="py-4 bg-body-tertiary border-top">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+      <div class="small text-secondary">© <span id="year"></span> Gerson Montenegro De Leon — Portafolio Frontend (Bootstrap)</div>
+      <div class="small d-flex gap-3">
+        <a href="#inicio" class="link-secondary">Inicio</a>
+        <a href="#proyectos" class="link-secondary">Proyectos</a>
+        <a href="#contacto" class="link-secondary">Contacto</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =============================== SCRIPTS ===============================
+       - Orden recomendado: primero Bootstrap (bundle con Popper), luego JS propio.
+       - El JS propio incluye: año dinámico, tema claro/oscuro y validación de formulario. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 1) Año dinámico en el footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 2) Tema claro/oscuro: usa atributo data-bs-theme en <html> y persiste en localStorage
+    (function(){
+      const root = document.documentElement;      // <html>
+      const toggle = document.getElementById('themeToggle');
+      // Recuperar preferencia previa si existe
+      const stored = localStorage.getItem('theme');
+      if (stored) root.setAttribute('data-bs-theme', stored);
+      // Función auxiliar para sincronizar ícono y aria-pressed
+      const setIcon = () => {
+        const t = root.getAttribute('data-bs-theme') || 'dark';
+        toggle.innerHTML = t === 'light' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon-stars"></i>';
+        toggle.setAttribute('aria-pressed', String(t === 'light'));
+      };
+      setIcon();
+      // Conmutar al hacer clic
+      toggle?.addEventListener('click', () => {
+        const current = root.getAttribute('data-bs-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-bs-theme', next);
+        localStorage.setItem('theme', next);
+        setIcon();
+      });
+    })();
+
+    // 3) Validación de formulario con API de validación nativa + clases de Bootstrap
+    (() => {
+      const form = document.getElementById('contactForm');
+      form?.addEventListener('submit', (event) => {
+        // checkValidity() devuelve false si algún campo required/regex falla
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        // Bootstrap aplica estilos a elementos inválidos si el form tiene .was-validated
+        form.classList.add('was-validated');
+      }, false);
+    })();
+  </script>
+</body>
+</html>
